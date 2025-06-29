@@ -105,23 +105,6 @@ class ItemServiceImpl implements ItemService {
         return maybeItem;
     }
 
-    private BooleanExpression makeStateCondition(GetItemRequest.State state) {
-        if (state.equals(GetItemRequest.State.READ)) {
-            return QItem.item.unread.isFalse();
-        } else {
-            return QItem.item.unread.isTrue();
-        }
-    }
-
-    private BooleanExpression makeContentTypeCondition(GetItemRequest.ContentType contentType) {
-        if (contentType.equals(GetItemRequest.ContentType.ARTICLE)) {
-            return QItem.item.mimeType.eq("text");
-        } else if (contentType.equals(GetItemRequest.ContentType.IMAGE)) {
-            return QItem.item.mimeType.eq("image");
-        } else {
-            return QItem.item.mimeType.eq("video");
-        }
-    }
 
     private Sort makeOrderByClause(GetItemRequest.Sort sort) {
         return switch (sort) {
