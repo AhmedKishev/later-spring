@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,6 +24,7 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,9 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ItemController.class)
-@ExtendWith(MockitoExtension.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ContextConfiguration(classes = {ItemMapper.class})
 class ItemControllerTest {
 
     @SuppressWarnings("deprecation")
@@ -45,8 +45,6 @@ class ItemControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
-    ItemMapper itemMapper;
 
     AddItemRequest addItemRequest;
     ItemDto itemDto;
@@ -77,14 +75,16 @@ class ItemControllerTest {
     @Test
     void modifyItemTest() throws Exception {
         ModifyItemRequest modifyItemRequest = ModifyItemRequest.of(1L, true, Set.of(), true);
-        ItemDto itemDtoModify = itemMapper.toItemDto(modifyItemRequest);
-        when(itemService.changeItem(any(), modifyItemRequest)).thenReturn(itemDtoModify);
+        when(itemService.changeItem(anyLong(), any())).thenReturn(itemDto);
         mockMvc.perform(patch("/items")
                         .header("X-Later-User-Id", 1)
                         .content(objectMapper.writeValueAsString(modifyItemRequest))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.userId", is(itemDto.getUserId()), Long.class))
+                .andExpect(jsonPath("$.url", is(itemDto.getUrl())));
     }
 }
