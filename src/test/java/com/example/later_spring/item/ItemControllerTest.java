@@ -79,7 +79,6 @@ class ItemControllerTest {
         ModifyItemRequest modifyItemRequest = ModifyItemRequest.of(1L, true, Set.of(), true);
         ItemDto itemDtoModify = itemMapper.toItemDto(modifyItemRequest);
         when(itemService.changeItem(any(), modifyItemRequest)).thenReturn(itemDtoModify);
-
         mockMvc.perform(patch("/items")
                         .header("X-Later-User-Id", 1)
                         .content(objectMapper.writeValueAsString(modifyItemRequest))
