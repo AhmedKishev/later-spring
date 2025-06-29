@@ -21,9 +21,6 @@ public class Item {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    // исключаем все поля с отложенной загрузкой из
-    // метода toString, чтобы не было случайных обращений
-    // базе данных, например при выводе в лог.
     @ToString.Exclude
     private User user;
 

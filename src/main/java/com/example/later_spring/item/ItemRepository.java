@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface ItemRepository extends JpaRepository<Item, Long>, QuerydslPredicateExecutor<Item> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByUserId(long userId);
 
@@ -26,6 +26,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>, QuerydslPredi
             "join it.user as u " +
             "where u.lastName like concat(?1, '%') ")
     List<Item> findItemsByLastNamePrefix(String lastNamePrefix);
+
     @Query("select new com.example.later_spring.item.dto.ItemCountByUser(it.user.id, count(it.id))" +
             "from Item as it " +
             "where it.url like ?1 " +

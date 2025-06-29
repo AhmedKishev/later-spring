@@ -19,8 +19,6 @@ public interface ItemService {
     void deleteItem(long userId, long itemId);
 
 
-    List<ItemDto> getItems(GetItemRequest req);
-
     ItemDto changeItem(long userId, ModifyItemRequest request);
 
     @Transactional(readOnly = true)

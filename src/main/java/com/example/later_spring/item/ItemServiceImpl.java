@@ -70,44 +70,6 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDto> getItems(GetItemRequest req) {
-        QItem item = QItem.item;
-
-        List<BooleanExpression> conditions = new ArrayList<>();
-
-        conditions.add(item.user.id.eq(req.getUserId()));
-
-        GetItemRequest.State state = req.getState();
-
-        if (!state.equals(GetItemRequest.State.ALL)) {
-            conditions.add(makeStateCondition(state));
-        }
-
-        GetItemRequest.ContentType contentType = req.getContentType();
-        if (!contentType.equals(GetItemRequest.ContentType.ALL)) {
-            conditions.add(makeContentTypeCondition(contentType));
-        }
-
-        if (req.hasTags()) {
-            conditions.add(item.tags.any().in(req.getTags()));
-        }
-
-
-        BooleanExpression finalCondition = conditions.stream()
-                .reduce(BooleanExpression::and)
-                .get();
-
-
-        Sort sort = makeOrderByClause(req.getSort());
-        PageRequest pageRequest = PageRequest.of(0, req.getLimit(), sort);
-
-
-        List<Item> items = (List<Item>) repository.findAll(finalCondition, pageRequest);
-        return items.stream().map(itemMapper::toItemDto).collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<ItemDto> getUserItems(String lastName) {
         List<Item> foundItems = repository.findItemsByLastNamePrefix(lastName);
         return foundItems.stream().map(itemMapper::toItemDto).collect(Collectors.toList());
